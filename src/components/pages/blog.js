@@ -1,13 +1,50 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 
-export default function () {
-  return (
-    <div>
-      <h2>Blog</h2>
-      <div>
-        <Link to='/about-me'>Read more about myself</Link>
+import BlogItem from '../blog/blog-item'
+
+class Blog extends Component {
+  constructor () {
+    super()
+
+    this.state = {
+      blogItems: []
+    }
+
+    this.getBlogItems - this.getBlogItems.bind(this)
+  }
+
+  getBlogItems () {
+    axios
+      .get('https://gregkimma.devcamp.space/portfolio/portfolio_blogs', {
+        withCredentials: true
+      })
+      .then(r => {
+        this.setState({
+          blogItems: r.data.portfolio_blogs
+        })
+      })
+      .catch(error => {
+        console.log('getBlogItems error', error)
+      })
+  }
+
+  componentWillMount () {
+    this.getBlogItems()
+  }
+
+  render () {
+    const blogRecords = this.state.blogItems.map(blogItem => {
+      return <BlogItem key={blogItem.id} blogItem={blogItem} />
+    })
+
+    return (
+      <div className='blog-container'>
+        <div className='content-container'>{blogRecords}</div>
       </div>
-    </div>
-  )
+    )
+  }
 }
+
+export default Blog
